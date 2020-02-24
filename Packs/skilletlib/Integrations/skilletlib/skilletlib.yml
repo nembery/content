@@ -1,0 +1,70 @@
+category: Network Security
+commonfields:
+  id: skilletlib
+  version: -1
+configuration:
+- display: vSkillet Git Repository
+  name: repo
+  required: true
+  type: 0
+- defaultvalue: master
+  display: Branch to Checkout
+  name: branch
+  required: true
+  type: 0
+description: Palo Alto Networks Validation Skillets perform a configuration file analysis
+  against a set of Validation Rules defined in a vSkillet.
+display: skilletlib
+name: skilletlib
+script:
+  commands:
+  - deprecated: false
+    description: List available Skillets
+    execution: false
+    name: pan-os-skilletlib-list
+    outputs:
+    - contextPath: PAN-OS-Skilletlib.skillet-list
+      description: List of Skillets available
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The Skillet to Execute
+      isArray: false
+      name: skillet_id
+      required: true
+      secret: false
+    - default: false
+      description: PAN-OS IP or Hostname  (e.g., 192.168.0.1)
+      isArray: false
+      name: ip_address
+      required: true
+      secret: false
+    - default: false
+      description: PAN-OS Username
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: PAN-OS Password
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    deprecated: false
+    description: Executes a vSkillet
+    execution: false
+    name: pan-os-skilletlib-validate
+    outputs:
+    - contextPath: PAN-OS-Skilletlib.output
+      description: The vSkillet output
+      type: String
+  dockerimage: devtesting/skilletlib:1.0.0.1582571942
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
