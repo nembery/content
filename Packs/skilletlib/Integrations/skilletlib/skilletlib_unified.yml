@@ -74,9 +74,7 @@ script:
       # noqa: E402 lgtm [py/polluting-import]
     # IMPORTS
 
-    import json
     import requests
-    import dateparser
     from skilletlib import SkilletLoader
     from skilletlib.skillet.base import Skillet
 
@@ -95,59 +93,22 @@ script:
 
         skilletLoader = None
 
-        def __init__(self, repo: str, branch: str):
+        def __init__(self, repo: str, branch: str, instance: str):
             self.repo = repo
             self.branch = branch
 
+            self.instance = instance
+            LOG(instance)
             self.skilletLoader = SkilletLoader()
-            self.skillets = self.skilletLoader.load_from_git(repo, 'pan_soar', branch, local_dir='.')
+            self.skillets = self.skilletLoader.load_from_git(repo, instance, branch, local_dir='.')
             LOG('SkilletLoader init complete!')
+            LOG.print_log()
 
         def list_skillets(self) -> list:
             return self.skillets
 
         def get_skillet(self, name) -> Skillet:
             return self.skilletLoader.get_skillet_with_name(name)
-
-        def say_hello(self, name):
-            return 'hi there'
-
-
-    class ClientOld(BaseClient):
-        """
-        Client will implement the service API, and should not contain any Demisto logic.
-        Should only do requests and return data.
-        """
-
-        def say_hello(self, name):
-            return f'Hello {name}'
-
-        def say_hello_http_request(self, name):
-            """
-            initiates a http request to a test url
-            """
-            data = self._http_request(
-                method='GET',
-                url_suffix='/hello/' + name
-            )
-            return data.get('result')
-
-        def list_incidents(self):
-            """
-            returns dummy incident data, just for the example.
-            """
-            return [
-                {
-                    'incident_id': 1,
-                    'description': 'Hello incident 1',
-                    'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-                },
-                {
-                    'incident_id': 2,
-                    'description': 'Hello incident 2',
-                    'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-                }
-            ]
 
 
     def test_module(client):
@@ -161,45 +122,7 @@ script:
             'ok' if test passed, anything else will fail the test.
         """
 
-        result = client.say_hello('DBot')
-        if 'Hello DBot' == result:
-            return 'ok'
-        else:
-            return 'Test failed because ......'
-
-
-    def say_hello_command(client, args):
-        """
-        Returns Hello {somename}
-
-        Args:
-            client (Client): HelloWorld client.
-            args (dict): all command arguments.
-
-        Returns:
-            Hello {someone}
-
-            readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-            outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs
-                            for other tasks in the playbook
-            raw_response (dict): Used for debugging/troubleshooting purposes -
-                                will be shown only if the command executed with raw-response=true
-        """
-        name = args.get('name')
-
-        result = client.say_hello(name)
-
-        # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-        readable_output = f'## {result}'
-        outputs = {
-            'hello': result
-        }
-
-        return (
-            readable_output,
-            outputs,
-            result  # raw response - the original response
-        )
+        return 'ok'
 
 
     def execute_validation_command(client, args):
@@ -240,6 +163,7 @@ script:
             # FIXME - handle panos output here
             readable_output = f'## Execution Results'
             readable_output += f'{results}'
+            output = results
 
         return (
             readable_output,
@@ -272,9 +196,13 @@ script:
 
         LOG(f'Command being called is {demisto.command()}')
         try:
+
+            instance = demisto.integrationInstance()
+            LOG(instance)
             client = Client(
                 repo=repo,
-                branch=branch)
+                branch=branch,
+                instance=instance)
 
             if demisto.command() == 'test-module':
                 # This is the call made when pressing the integration Test button.

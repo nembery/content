@@ -22,13 +22,14 @@ class Client:
 
     skilletLoader = None
 
-    def __init__(self, repo: str, branch: str):
+    def __init__(self, repo: str, branch: str, instance: str):
         self.repo = repo
         self.branch = branch
 
+        self.instance = instance
+        LOG(instance)
         self.skilletLoader = SkilletLoader()
-        self.skillets = self.skilletLoader.load_from_git(repo, 'pan_soar', branch, local_dir='.')
-        LOG('SkilletLoader init complete!')
+        self.skillets = self.skilletLoader.load_from_git(repo, instance, branch, local_dir='.')
 
     def list_skillets(self) -> list:
         return self.skillets
@@ -67,7 +68,6 @@ def execute_validation_command(client, args):
     skillet.initialize_context(context)
 
     results = skillet.execute(context)
-    LOG(results)
 
     if skillet.type == 'pan_validation':
 
@@ -122,9 +122,13 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
+
+        instance = demisto.integrationInstance()
+
         client = Client(
             repo=repo,
-            branch=branch)
+            branch=branch,
+            instance=instance)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
