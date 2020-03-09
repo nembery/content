@@ -63,7 +63,7 @@ script:
     - contextPath: PAN-OS-Skilletlib.output
       description: The vSkillet output
       type: String
-  dockerimage: devtesting/skilletlib:1.0.0.1582571942
+  dockerimage: devtesting/skilletlib:1.0.0.1582745285
   feed: false
   isfetch: false
   longRunning: false
@@ -101,8 +101,6 @@ script:
             LOG(instance)
             self.skilletLoader = SkilletLoader()
             self.skillets = self.skilletLoader.load_from_git(repo, instance, branch, local_dir='.')
-            LOG('SkilletLoader init complete!')
-            LOG.print_log()
 
         def list_skillets(self) -> list:
             return self.skillets
@@ -141,7 +139,6 @@ script:
         skillet.initialize_context(context)
 
         results = skillet.execute(context)
-        LOG(results)
 
         if skillet.type == 'pan_validation':
 
@@ -198,7 +195,7 @@ script:
         try:
 
             instance = demisto.integrationInstance()
-            LOG(instance)
+
             client = Client(
                 repo=repo,
                 branch=branch,

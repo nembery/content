@@ -59,7 +59,7 @@ script:
     - contextPath: PAN-OS-Skilletlib.output
       description: The vSkillet output
       type: String
-  dockerimage: devtesting/skilletlib:1.0.0.1582571942
+  dockerimage: devtesting/skilletlib:1.0.0.1582745285
   feed: false
   isfetch: false
   longRunning: false
